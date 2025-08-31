@@ -21,9 +21,10 @@ Welcome to this comprehensive **MongoDB tutorial**! Here you'll learn essential 
 2. [Deleting Documents](#2️⃣-deleting-documents)  
 3. [Cleaning Collections](#3️⃣-cleaning-a-collection)  
 4. [Schema Validation](#4️⃣-schema-validation-with-collmod)  
-5. [Summary](#-summary)  
-6. [Next Steps](#-next-steps)  
-[Query Operators: Comparisons](#-query-operators-comparisons)
+5. [Projection](#-projection-selecionando-campos-específicos)  
+6. [Summary](#-summary)  
+7. [Next Steps](#-next-steps)  
+
 ---
 
 ## 1️⃣ Updating Documents
@@ -138,24 +139,38 @@ db.runCommand({
 - `"off"` - No validation  
 
 ---
-## 🔍 Query Operators: Comparisons
 
-MongoDB fornece operadores de comparação que permitem filtrar documentos com base em condições específicas.  
 
-| Operador | Significado             | Exemplo de Uso |
-|----------|-------------------------|----------------|
-| `$lt`    | Menor que               | `{ age: { $lt: 18 } }` → Retorna documentos com `age` **menor que 18** |
-| `$lte`   | Menor ou igual a        | `{ price: { $lte: 100 } }` → Retorna documentos com `price` **menor ou igual a 100** |
-| `$gte`   | Maior ou igual a        | `{ score: { $gte: 70 } }` → Retorna documentos com `score` **maior ou igual a 70** |
-| `$ne`    | Diferente de / Não igual| `{ status: { $ne: "active" } }` → Retorna documentos onde `status` **não é "active"** |
+## 📑 Projection: Selecionando Campos Específicos
 
-### 📌 Exemplo prático:
+No MongoDB, a **projeção** define quais campos de um documento devem ser retornados em uma consulta.  
+Isso é útil para **otimizar a performance**, **reduzir a quantidade de dados retornados** e **mostrar apenas as informações relevantes**.
+
+### 📌 Exemplo:
 ```javascript
-db.users.find({
-  age: { $gte: 18, $lt: 30 },       // Idade entre 18 e 29
-  status: { $ne: "inactive" }       // Exclui usuários com status "inactive"
-})
----
+db.books.find({}, { title: 1, author: 1, _id: 0 })
+```
+
+### 🔎 O que esse comando faz?
+- `{}` → Filtro vazio, ou seja, busca **todos os documentos** da coleção `books`.  
+- `{ title: 1, author: 1, _id: 0 }` → Projeção que define quais campos serão retornados:  
+  - `title: 1` → Inclui o campo **title** no resultado  
+  - `author: 1` → Inclui o campo **author** no resultado  
+  - `_id: 0` → Exclui o campo **_id** (que vem por padrão nas consultas)  
+
+### ✅ Resultado esperado:
+```json
+[
+  { "title": "Clean Code", "author": "Robert C. Martin" },
+  { "title": "Design Patterns", "author": "Erich Gamma" },
+  { "title": "The Pragmatic Programmer", "author": "Andrew Hunt" }
+]
+```
+
+> 📌 **Resumo:** A projeção permite **incluir (`1`) ou excluir (`0`) campos** no retorno de uma consulta.  
+É possível combinar várias inclusões, mas a exclusão só pode ser feita junto do campo `_id`.
+
+
 ## ✅ Summary
 You've learned how to:
 - 📝 Update documents individually and in bulk using powerful operators  
