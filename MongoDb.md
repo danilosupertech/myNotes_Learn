@@ -23,7 +23,7 @@ Welcome to this comprehensive **MongoDB tutorial**! Here you'll learn essential 
 4. [Schema Validation](#4️⃣-schema-validation-with-collmod)  
 5. [Summary](#-summary)  
 6. [Next Steps](#-next-steps)  
-
+[Query Operators: Comparisons](#-query-operators-comparisons)
 ---
 
 ## 1️⃣ Updating Documents
@@ -138,7 +138,24 @@ db.runCommand({
 - `"off"` - No validation  
 
 ---
+## 🔍 Query Operators: Comparisons
 
+MongoDB fornece operadores de comparação que permitem filtrar documentos com base em condições específicas.  
+
+| Operador | Significado             | Exemplo de Uso |
+|----------|-------------------------|----------------|
+| `$lt`    | Menor que               | `{ age: { $lt: 18 } }` → Retorna documentos com `age` **menor que 18** |
+| `$lte`   | Menor ou igual a        | `{ price: { $lte: 100 } }` → Retorna documentos com `price` **menor ou igual a 100** |
+| `$gte`   | Maior ou igual a        | `{ score: { $gte: 70 } }` → Retorna documentos com `score` **maior ou igual a 70** |
+| `$ne`    | Diferente de / Não igual| `{ status: { $ne: "active" } }` → Retorna documentos onde `status` **não é "active"** |
+
+### 📌 Exemplo prático:
+```javascript
+db.users.find({
+  age: { $gte: 18, $lt: 30 },       // Idade entre 18 e 29
+  status: { $ne: "inactive" }       // Exclui usuários com status "inactive"
+})
+---
 ## ✅ Summary
 You've learned how to:
 - 📝 Update documents individually and in bulk using powerful operators  
