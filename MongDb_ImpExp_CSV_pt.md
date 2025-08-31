@@ -1,48 +1,45 @@
 # 📚 Guia Completo: Importação e Exportação de Dados no MongoDB
 
 ## 🚀 Introdução
-Este guia é um **tutorial rápido e de bolso** sobre como importar e exportar dados no MongoDB. Ele combina scripts **prontos para copiar e colar** com explicações detalhadas para cada comando, permitindo que qualquer pessoa, mesmo sem experiência, consiga aprender e executar sem precisar de estrutura prévia.
+Este guia é uma **referência rápida e tutorial de bolso** sobre como importar e exportar dados no MongoDB. Combina **scripts prontos para copiar e colar** com **explicações detalhadas** para cada comando, permitindo que qualquer pessoa aprenda e execute desde o zero.
 
-Você vai aprender a:
-- Criar diretórios e arquivos de dados.
-- Importar **JSON** e **CSV** usando `mongoimport`.
-- Tratar tipos de dados no MongoDB.
+Você aprenderá a:
+- Criar diretórios de projeto e arquivos de dados.
+- Importar **JSON** em uma coleção e **CSV** em outra coleção independente usando `mongoimport`.
+- Manipular tipos de dados no MongoDB.
 - Consultar e validar dados importados.
 - Exportar coleções usando `mongoexport`.
 
 ---
 
-## 1️⃣ Preparar Ambiente
+## 1️⃣ Preparar o Ambiente
 
-### 1.1 Criar diretório do projeto
-
+### 1.1 Criar diretório de projeto
 ```bash
-mkdir -p ~/project  # Cria o diretório ~/project se não existir
-cd ~/project          # Entra no diretório criado
+mkdir -p ~/project  # Cria o diretório ~/project caso não exista
+cd ~/project          # Navega para o diretório criado
 ```
 **Explicação:**
-- `mkdir -p` → cria diretórios incluindo subdiretórios se necessário.
-- `cd` → navega para o diretório criado, onde vamos armazenar arquivos de dados.
+- `mkdir -p` → cria diretórios, incluindo os pais, se necessário.
+- `cd` → navega até o diretório onde os arquivos de dados serão armazenados.
 
 ---
 
 ## 2️⃣ Criar Arquivos de Dados
 
-### 2.1 Arquivo JSON (`books.json`)
+### 2.1 Arquivo JSON (`books.json`) - para a coleção `books`
 ```bash
 cat <<EOL > books.json
 [
-  {"_id": 1, "title": "MongoDB Basics", "author": "Jane Smith", "year": 2023, "tags": ["mongodb", "database", "nosql"]},
-  {"_id": 2, "title": "Python Programming", "author": "John Doe", "year": 2022, "tags": ["python", "programming"]},
-  {"_id": 3, "title": "Data Science Handbook", "author": "Alice Johnson", "year": 2021, "tags": ["data science", "python", "machine learning"]}
+  {"_id": 1, "title": "MongoDB Básico", "author": "Jane Smith", "year": 2023, "tags": ["mongodb", "database", "nosql"]},
+  {"_id": 2, "title": "Programação em Python", "author": "John Doe", "year": 2022, "tags": ["python", "programming"]},
+  {"_id": 3, "title": "Manual de Data Science", "author": "Alice Johnson", "year": 2021, "tags": ["data science", "python", "machine learning"]}
 ]
 EOL
 ```
-**Explicação:**
-- `cat <<EOL > books.json` → cria um arquivo chamado `books.json` e insere o conteúdo entre `EOL`.
-- O JSON contém uma lista de documentos que serão importados no MongoDB.
+**Explicação:** Este arquivo JSON será importado para a coleção independente `books`.
 
-### 2.2 Arquivo CSV (`library_members.csv`)
+### 2.2 Arquivo CSV (`library_members.csv`) - para a coleção `members`
 ```bash
 cat <<EOL > library_members.csv
 name,age,membership_status
@@ -51,52 +48,39 @@ Jane Smith,28,active
 Mike Johnson,42,expired
 EOL
 ```
-**Explicação:**
-- CSV é um formato de dados tabular.
-- Primeira linha são os nomes dos campos (`header`).
-- As linhas seguintes são os dados que serão importados.
+**Explicação:** Este arquivo CSV será importado para a coleção independente `members`. Cada arquivo é **exemplo separado** para mostrar a diferença entre importação JSON e CSV.
 
 ---
 
-## 3️⃣ Importar Dados JSON
-
+## 3️⃣ Importar JSON para a coleção `books`
 ```bash
 mongoimport --db library_db --collection books --file ~/project/books.json --jsonArray
 ```
-**Explicação detalhada:**
-- `mongoimport` → ferramenta para importar dados para MongoDB.
-- `--db library_db` → banco de dados de destino chamado `library_db`.
-- `--collection books` → coleção de destino chamada `books`.
-- `--file ~/project/books.json` → caminho do arquivo a ser importado.
-- `--jsonArray` → indica que o arquivo contém **um array JSON**, cada item será um documento.
+**Explicação:**
+- `mongoimport` → ferramenta CLI para importar dados no MongoDB.
+- `--db library_db` → banco de dados alvo.
+- `--collection books` → coleção alvo.
+- `--file ~/project/books.json` → caminho do arquivo de entrada.
+- `--jsonArray` → indica que o arquivo contém um array JSON, cada elemento se torna um documento.
 
-### Verificar importação
+### Verificar importação JSON
 ```bash
 mongosh
 use library_db
-# Conta os documentos da coleção books
 db.books.countDocuments()
-# Visualiza um documento
 db.books.findOne()
 exit
 ```
-**Explicação:**
-- `mongosh` → inicia o shell interativo do MongoDB.
-- `use library_db` → muda para o banco de dados `library_db`.
-- `countDocuments()` → retorna a quantidade de documentos na coleção.
-- `findOne()` → exibe o primeiro documento.
-- `exit` → sai do shell.
 
 ---
 
-## 4️⃣ Importar Dados CSV
-
+## 4️⃣ Importar CSV para a coleção `members`
 ```bash
 mongoimport --db library_db --collection members --type csv --file ~/project/library_members.csv --headerline
 ```
-**Explicação detalhada:**
-- `--type csv` → indica que o arquivo é CSV.
-- `--headerline` → usa a primeira linha do CSV como nomes dos campos.
+**Explicação:**
+- `--type csv` → arquivo de entrada é CSV.
+- `--headerline` → usa a primeira linha como nomes dos campos.
 
 ### Verificar importação CSV
 ```bash
@@ -106,31 +90,25 @@ db.members.countDocuments()
 db.members.findOne()
 exit
 ```
-**Explicação:** mesmo conceito do JSON.
 
 ---
 
-## 5️⃣ Manipular Tipos de Dados CSV
+## 5️⃣ Manipular Tipos de Dados no CSV
 
-### 5.1 Criar CSV sem cabeçalho
+### 5.1 Remover cabeçalho para campos manuais
 ```bash
 tail -n +2 ~/project/library_members.csv > ~/project/library_members_no_header.csv
 ```
-- `tail -n +2` → remove a primeira linha (cabeçalho) e cria um novo arquivo.
 
-### 5.2 Importar com campos explícitos
+### 5.2 Importar CSV com campos explícitos para `typed_members`
 ```bash
 mongoimport --db library_db --collection typed_members --type csv --file ~/project/library_members_no_header.csv --fields "name,age,membership_status"
 ```
-- `--fields` → define os nomes dos campos manualmente.
 
-### 5.3 Converter idade para inteiro
+### 5.3 Converter campo `age` de string para inteiro
 ```bash
 mongosh library_db --eval "db.typed_members.updateMany({}, [{ $set: { age: { $toInt: \"$age\" } } }])"
 ```
-- `updateMany` → atualiza todos os documentos.
-- `$set` → define o novo valor para o campo.
-- `$toInt` → converte o campo de string para inteiro.
 
 ### 5.4 Verificar conversão
 ```javascript
@@ -139,8 +117,6 @@ typeof db.typed_members.findOne().age
 db.typed_members.find({ age: { $gt: 30 } })
 exit
 ```
-- `typeof` → verifica o tipo do campo.
-- `$gt` → operador “maior que” para consultas numéricas.
 
 ---
 
@@ -150,32 +126,34 @@ exit
 ```javascript
 show collections
 ```
-### Teste de consultas
+### Consultas de exemplo
 ```javascript
 db.books.find({ tags: "python" })
-db.typed_members.find({ membership_status: "active" })
+db.members.find({ membership_status: "active" })
+db.typed_members.find({ age: { $gt: 30 } })
 exit
 ```
-- `$tags` → busca documentos que contenham o valor na array.
-- Validação simples de integridade dos dados.
+- Cada coleção é independente e as consultas validam a estrutura dos dados.
 
 ---
 
 ## 7️⃣ Exportar Dados
 
+### Exportar coleção `books` para JSON
 ```bash
 mongoexport --db library_db --collection books --out ~/project/exported_books.json
 cat ~/project/exported_books.json
 ```
 - `mongoexport` → exporta uma coleção para arquivo JSON.
-- `--out` → define o arquivo de saída.
-- `cat` → exibe o conteúdo do arquivo exportado.
+- `--out` → especifica arquivo de saída.
+- `cat` → exibe o conteúdo exportado.
 
 ---
 
 ## ✅ Resumo
-- Criamos diretórios e arquivos do zero.
-- Importamos **JSON** e **CSV**.
-- Tratamos tipos de dados e realizamos consultas.
-- Exportamos coleções para arquivos JSON.
-- Cada comando foi explicado detalhadamente para referência rápida e aprendizado completo.
+- Criou diretórios e arquivos de dados independentes.
+- Importou **JSON** para `books` e **CSV** para `members` (e `typed_members`).
+- Manipulou tipos de dados para operações numéricas.
+- Executou consultas e validou integridade dos dados.
+- Exportou coleções para JSON.
+- Explicações detalhadas fornecem tanto **referência rápida** quanto **tutorial completo**.
